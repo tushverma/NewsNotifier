@@ -1,0 +1,4 @@
+requests
+newsapi-python
+boto3
+python-dotenv

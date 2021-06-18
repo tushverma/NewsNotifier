@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  NewsNotifier
+
+  Sample SAM Template for NewsNotifier
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    Environment:
+      Variables:
+        NEWSAPI_ACCESS_KEY: 8a5a6762dfb64d74ae18efab20ff95e2
+
+Resources:
+  NewsNotifierEmailFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: news_notifier/
+      Handler: app.lambda_handler_news_email
+      Runtime: python3.7
+
+  GetNewsFromNewsAPIFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: news_notifier/
+      Handler: app.lambda_handler_get_news_from_news_api
+      Runtime: python3.7
+      Events:
+        NewsNotifier:
+          schedule: cron(0 1 * * ? *)
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  NewsNotifierEmailFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt NewsNotifierEmailFunction.Arn
+  GetNewsFromNewsAPIFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt GetNewsFromNewsAPIFunction.Arn
+
+  NewsNotifierFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt NewsNotifierFunctionRole.Arn
